@@ -1,0 +1,43 @@
+AUTOMATED REPORT
+
+code:# Install necessary libraries (if not installed)
+!pip install fpdf pandas
+
+# Import libraries
+import pandas as pd
+from fpdf import FPDF
+
+# Step 1: Load the data
+data = {
+    "Name": ["John Doe", "Jane Smith", "Sam Brown"],
+    "Score": [85, 92, 78]
+}
+df = pd.DataFrame(data)
+
+# Step 2: Analyze the data (simple summary)
+summary = df.describe()
+
+# Step 3: Generate PDF Report
+class PDF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 14)
+        self.cell(0, 10, 'Student Scores Report', 0, 1, 'C')
+    
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+pdf = PDF()
+pdf.add_page()
+pdf.set_font("Arial", size=12)
+
+pdf.cell(0, 10, "Data Summary:", ln=True)
+for index, row in summary.iterrows():
+    pdf.cell(0, 10, f'{index}: {row.to_dict()}', ln=True)
+
+pdf.cell(0, 10, "Detailed Data:", ln=True)
+for index, row in df.iterrows():
+    pdf.cell(0, 10, f'{row["Name"]}: {row["Score"]}', ln=True)
+
+pdf.output("Student_Scores_Report.pdf")
